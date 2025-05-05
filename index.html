@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="description" content="Convert images to JPG, PNG, GIF, WEBP, BMP online with compression.">
+  <meta name="keywords" content="image converter, convert jpg, convert png, image compressor, image format tool">
+  <meta name="author" content="ML Y">
+  <title>Image Converter & Compressor</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+    }
+    body {
+      margin: 0;
+      background: linear-gradient(135deg, #dbeafe, #fdf2f8);
+      color: #222;
+      padding: 20px;
+    }
+    .container {
+      max-width: 650px;
+      margin: auto;
+      background: #fff;
+      border-radius: 25px;
+      padding: 30px;
+      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+      animation: fadeIn 1s ease;
+    }
+    @keyframes fadeIn {
+      from {opacity: 0; transform: translateY(20px);}
+      to {opacity: 1; transform: translateY(0);}
+    }
+    h1 {
+      text-align: center;
+      font-size: 26px;
+      margin-bottom: 20px;
+      color: #1e40af;
+    }
+    label {
+      font-weight: 600;
+      display: block;
+      margin: 15px 0 5px;
+    }
+    input[type="file"] {
+      display: none;
+    }
+    .custom-file-upload {
+      display: block;
+      background: #e0f2fe;
+      border: 2px dashed #38bdf8;
+      padding: 30px;
+      text-align: center;
+      cursor: pointer;
+      border-radius: 15px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+    .custom-file-upload:hover {
+      background: #bae6fd;
+    }
+    select, input[type="range"] {
+      width: 100%;
+      padding: 10px;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+    }
+    #preview {
+      max-width: 100%;
+      margin: 20px 0;
+      border-radius: 10px;
+      display: none;
+    }
+    .btn {
+      background: #1e3a8a;
+      color: #fff;
+      padding: 12px 25px;
+      border-radius: 50px;
+      border: none;
+      cursor: pointer;
+      display: inline-block;
+      font-weight: 600;
+      transition: 0.3s ease;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+      text-decoration: none;
+    }
+    .btn:hover {
+      background: #2563eb;
+    }
+    .output {
+      text-align: center;
+    }
+    .ads {
+      margin: 30px 0;
+      text-align: center;
+      padding: 20px;
+      background: #f0f0f0;
+      border-radius: 10px;
+      border: 2px dashed #aaa;
+    }
+    footer {
+      text-align: center;
+      margin-top: 40px;
+      color: #444;
+      font-size: 15px;
+      font-weight: 500;
+    }
+    .flag {
+      color: red;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>Image Format Converter & Compressor</h1>
+
+    <label for="upload" class="custom-file-upload">
+      Click to Select Image
+      <input type="file" id="upload" accept="image/*" />
+    </label>
+
+    <label>Choose Output Format:</label>
+    <select id="format">
+      <option value="image/jpeg">JPG / JPEG</option>
+      <option value="image/png">PNG</option>
+      <option value="image/gif">GIF</option>
+      <option value="image/webp">WEBP</option>
+      <option value="image/bmp">BMP</option>
+      <option value="svg">SVG *</option>
+      <option value="tiff">TIFF *</option>
+    </select>
+
+    <label>Compression Quality: <span id="qualityVal">80</span>%</label>
+    <input type="range" min="10" max="100" value="80" id="qualityRange" />
+
+    <div class="output">
+      <img id="preview" src="" />
+      <br>
+      <a id="downloadBtn" class="btn" style="display:none;">Download Image</a>
+      <p id="warning" style="color:red; display:none; font-weight:bold;"></p>
+    </div>
+  </div>
+
+  <div class="ads">
+    <!-- Google AdSense Ad Placeholder -->
+    <ins class="adsbygoogle"
+      style="display:block"
+      data-ad-client="ca-app-pub-1422527115960961/4474448507"
+      data-ad-slot="4474448507"
+      data-ad-format="auto"
+      data-full-width-responsive="true"></ins>
+  </div>
+
+  <footer>
+    Made in <span class="flag">India</span> | &copy; 2025 ML Y
+  </footer>
+
+  <script>
+    const upload = document.getElementById("upload");
+    const preview = document.getElementById("preview");
+    const format = document.getElementById("format");
+    const qualityRange = document.getElementById("qualityRange");
+    const qualityVal = document.getElementById("qualityVal");
+    const downloadBtn = document.getElementById("downloadBtn");
+    const warning = document.getElementById("warning");
+
+    qualityRange.oninput = () => {
+      qualityVal.textContent = qualityRange.value;
+    };
+
+    upload.onchange = function () {
+      const file = this.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        const img = new Image();
+        img.src = e.target.result;
+
+        img.onload = function () {
+          const canvas = document.createElement("canvas");
+          canvas.width = img.width;
+          canvas.height = img.height;
+          const ctx = canvas.getContext("2d");
+
+          ctx.fillStyle = "#fff";
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+          ctx.drawImage(img, 0, 0);
+
+          let selectedFormat = format.value;
+          const quality = parseInt(qualityRange.value) / 100;
+
+          if (selectedFormat === "svg" || selectedFormat === "tiff") {
+            warning.style.display = "block";
+            warning.textContent = "Sorry, your browser cannot export to SVG or TIFF directly.";
+            preview.style.display = "none";
+            downloadBtn.style.display = "none";
+            return;
+          }
+
+          canvas.toBlob((blob) => {
+            const url = URL.createObjectURL(blob);
+            preview.src = url;
+            preview.style.display = "block";
+            warning.style.display = "none";
+            downloadBtn.href = url;
+            downloadBtn.download = `converted-image.${selectedFormat.split("/")[1]}`;
+            downloadBtn.style.display = "inline-block";
+          }, selectedFormat, quality);
+        };
+      };
+      reader.readAsDataURL(file);
+    };
+
+    (adsbygoogle = window.adsbygoogle || []).push({});
+  </script>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+</body>
+</html>
